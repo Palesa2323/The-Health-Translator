@@ -1,6 +1,7 @@
 
 import streamlit as st
-
+from services.document_reader import extract_text
+from services.result_parser import parse_results
 
 ALLOWED_FILE_TYPES = ["pdf", "png", "jpg", "jpeg"]
 
@@ -35,10 +36,74 @@ def render_upload_section():
                 f"{uploaded_file.size / 1024:.1f} KB"
             )
 
-            st.info(
-                "The file is uploaded into this session, but "
-                "its contents have not been extracted yet."
-            )
+            if st.button(
+                "Extract report text",
+                key="extract_report_text",
+            ):
+                with st.spinner("Reading your report..."):
+                    extraction = extract_text(uploaded_file)
+
+                st.session_state["report_extraction"] = extraction
+
+            extraction = st.session_state.get("report_extraction")
+
+            if extraction:
+                if extraction["success"]:
+                    st.success(extraction["message"])
+
+                    st.text_area(
+                        "Extracted text - please verify",
+                        value=extraction["text"],
+                        height=250,
+                        key="extracted_report_text",
+                    )
+                else:
+                    st.warning(extraction["message"])
+
+                    if st.button(
+                        "Identify possible lab results",
+                        key="parse_report_results",
+                    ):
+                        extracted_text = st.session_state.get(
+                            "extracted_report_text",
+                            extraction["text"],
+                        )
+
+                        parsed_results = parse_results(
+                            extracted_text
+                        )
+
+                        st.session_state["parsed_results"] = (
+                            parsed_results
+                        )
+
+                    parsed_results = st.session_state.get(
+                        "parsed_results", []
+                    )
+
+                    if parsed_results:
+                        st.subheader(
+                            "Possible results - verify before continuing"
+                        )
+
+                        st.warning(
+                            "These are automatically extracted candidates. "
+                            "Compare every field with the original report."
+                        )
+
+                        st.dataframe(
+                            parsed_results,
+                            use_container_width=True,
+                            hide_index=True,
+                        )
+                    elif "parsed_results" in st.session_state:
+                        st.info(
+                            "No results matched the current parser. "
+                            "This does not mean your report contains "
+                            "no laboratory results. You can enter "
+                            "them manually."
+                        )
+
 
     with manual_tab:
         st.caption(

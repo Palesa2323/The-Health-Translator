@@ -2,3 +2,4 @@ streamlit
 pypdf
 Pillow
 pytesseract
+pytest
