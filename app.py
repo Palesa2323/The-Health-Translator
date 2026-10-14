@@ -1,23 +1,23 @@
 
-import streamlit as st  # type: ignore[import-not-found]
+
+import streamlit as st
+
+from UI.styles import load_styles
+from UI.layout import render_home_page
 
 
 def main():
-    """Start The Health Translator application."""
+    """Configure and launch The Health Translator."""
+
     st.set_page_config(
         page_title="The Health Translator",
-        page_icon="💜",
+        page_icon="HT",
         layout="wide",
+        initial_sidebar_state="collapsed",
     )
 
-    st.title("The Health Translator")
-    st.write("Medical language, made human.")
-
-    st.info(
-        "Our application foundation is ready. "
-        "The interface and report-processing features will be "
-        "implemented in separate modules."
-    )
+    load_styles()
+    render_home_page()
 
 
 if __name__ == "__main__":
