@@ -4,7 +4,7 @@ import streamlit as st
 
 from UI.styles import load_styles
 from UI.layout import render_home_page
-
+from UI.upload_page import render_upload_section
 
 def main():
     """Configure and launch The Health Translator."""
@@ -18,6 +18,8 @@ def main():
 
     load_styles()
     render_home_page()
+    st.divider()
+    render_upload_section()
 
 
 if __name__ == "__main__":
