@@ -1,25 +1,45 @@
-
-
 import streamlit as st
 
 from UI.styles import load_styles
 from UI.layout import render_home_page
 from UI.upload_page import render_upload_section
+from UI.explanation_page import render_explanation_page
+
 
 def main():
     """Configure and launch The Health Translator."""
 
     st.set_page_config(
         page_title="The Health Translator",
-        page_icon="HT",
+        page_icon="🧬",
         layout="wide",
-        initial_sidebar_state="collapsed",
+        initial_sidebar_state="expanded",
     )
 
     load_styles()
-    render_home_page()
-    st.divider()
-    render_upload_section()
+
+    with st.sidebar:
+        st.title("The Health Translator")
+        st.caption("Medical language, made human.")
+
+        selected_page = st.radio(
+            "Navigate",
+            [
+                "Overview",
+                "My Report",
+                "AI Explanation",
+            ],
+            label_visibility="collapsed",
+        )
+
+    if selected_page == "Overview":
+        render_home_page()
+
+    elif selected_page == "My Report":
+        render_upload_section()
+
+    elif selected_page == "AI Explanation":
+        render_explanation_page()
 
 
 if __name__ == "__main__":

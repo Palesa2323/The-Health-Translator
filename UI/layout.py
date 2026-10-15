@@ -1,14 +1,31 @@
+from pathlib import Path
 
 import streamlit as st
+
+
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+LOGO_PATH = PROJECT_ROOT / "assets" / " logo.png"
+
+
+def render_brand():
+    """Display the application's logo and name."""
+
+    if LOGO_PATH.exists():
+        st.image(str(LOGO_PATH), width=100)
+
+    st.markdown(
+        '<div class="brand-label">THE HEALTH TRANSLATOR</div>',
+        unsafe_allow_html=True,
+    )
 
 
 def render_header():
     """Display the application's brand and introduction."""
 
+    render_brand()
+
     st.markdown(
         """
-        <div class="brand-label">THE HEALTH TRANSLATOR</div>
-
         <section class="hero">
             <div class="brand-label">YOUR RESULTS, EXPLAINED</div>
             <h1>Medical language,<br>made human.</h1>
@@ -95,8 +112,16 @@ def render_home_page():
     render_safety_note()
 
     st.write("")
-    st.subheader("Ready to explore a report?")
+    st.subheader("Start with your laboratory report")
     st.write(
-        "The report upload and manual-entry workflow will be "
-        "added next. For now, this is the foundation of the interface."
+        "Upload a PDF or image, or enter your results manually "
+        "to begin understanding the information your laboratory provided."
     )
+
+    if st.button(
+        "Explore my report",
+        type="primary",
+        use_container_width=False,
+    ):
+        st.session_state["requested_page"] = "My Report"
+        st.rerun()
