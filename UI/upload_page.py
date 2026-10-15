@@ -7,11 +7,12 @@ from UI.results_review import render_results_review
 
 
 def render_upload_section():
+    """Display upload and manual-entry workflows separately."""
+
     st.header("Start with your laboratory report")
     st.write(
         "Upload a report or enter your results manually. "
-        "Review the information before any explanations "
-        "are generated."
+        "Review the information before receiving explanations."
     )
 
     upload_tab, manual_tab = st.tabs(
@@ -20,7 +21,14 @@ def render_upload_section():
 
     with upload_tab:
         render_report_upload()
-        render_results_review()
+
+        # Review results extracted from the uploaded report.
+        if st.session_state.get("parsed_results"):
+            render_results_review(source="upload")
 
     with manual_tab:
         render_manual_entry()
+
+        # Review results entered manually.
+        if st.session_state.get("lab_results"):
+            render_results_review(source="manual")
