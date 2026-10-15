@@ -4,7 +4,7 @@ import streamlit as st
 from UI.report_upload import render_report_upload
 from UI.manual_entry import render_manual_entry
 from UI.results_review import render_results_review
-
+from UI.explanation_page import render_explanation_page
 
 def render_upload_section():
     """Display upload and manual-entry workflows separately."""
@@ -18,7 +18,9 @@ def render_upload_section():
     upload_tab, manual_tab = st.tabs(
         ["Upload a report", "Enter results manually"]
     )
-
+    
+    render_explanation_page()
+    
     with upload_tab:
         render_report_upload()
 

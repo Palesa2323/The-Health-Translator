@@ -2,26 +2,40 @@
 import re
 
 
-def parse_results(report_text: str) -> list[dict]:
-    """Identify possible laboratory results in extracted text.
+NUMBER = r"-?\d+(?:\.\d+)?"
 
-    This first version recognises simple rows containing:
-    test name, numeric result, unit, and reference range.
-    It does not diagnose or interpret medical meaning.
-    """
+UNIT = r"(?:x\s*10\^\d+/L|%|[A-Za-zµμ]+(?:/[A-Za-zµμ]+)?)"
+
+RESULT_PATTERN = re.compile(
+    rf"^\s*"
+    rf"(?P<test>[A-Za-z][A-Za-z0-9 /()_-]*?)"
+    rf"\s+"
+    rf"(?P<value>{NUMBER})"
+    rf"\s*"
+    rf"(?P<unit>{UNIT})"
+    rf"\s+"
+    rf"(?P<minimum>{NUMBER})"
+    rf"\s*[-–]\s*"
+    rf"(?P<maximum>{NUMBER})"
+    rf"\s*"
+    rf"(?P<reference_unit>{UNIT})?"
+    rf"\s*$",
+    re.IGNORECASE,
+)
+
+
+def parse_results(report_text: str) -> list[dict]:
+    """Extract candidate laboratory results for human verification."""
 
     results = []
 
-    pattern = re.compile(
-        r"(?P<test>[A-Za-z][A-Za-z /()-]{1,50}?)\s+"
-        r"(?P<value>-?\d+(?:\.\d+)?)\s+"
-        r"(?P<unit>[A-Za-z%µμ/^.0-9]+)\s+"
-        r"(?P<minimum>-?\d+(?:\.\d+)?)\s*[-–]\s*"
-        r"(?P<maximum>-?\d+(?:\.\d+)?)"
-    )
+    for line_number, line in enumerate(report_text.splitlines(), start=1):
+        line = line.strip()
 
-    for line in report_text.splitlines():
-        match = pattern.search(line.strip())
+        if not line:
+            continue
+
+        match = RESULT_PATTERN.match(line)
 
         if not match:
             continue
@@ -32,14 +46,27 @@ def parse_results(report_text: str) -> list[dict]:
         if minimum > maximum:
             continue
 
+        unit = match.group("unit").strip()
+        reference_unit = match.group("reference_unit")
+
+        if reference_unit:
+            normalised_unit = re.sub(r"\s+", "", unit).casefold()
+            normalised_reference_unit = re.sub(
+                r"\s+", "", reference_unit
+            ).casefold()
+
+            if normalised_unit != normalised_reference_unit:
+                continue
+
         results.append(
             {
                 "test_name": match.group("test").strip(),
                 "result": float(match.group("value")),
-                "unit": match.group("unit"),
+                "unit": unit,
                 "reference_min": minimum,
                 "reference_max": maximum,
-                "needs_review": False,
+                "source_line": line_number,
+                "needs_review": True,
             }
         )
 

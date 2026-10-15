@@ -49,12 +49,17 @@ def render_explanation_page():
             )
 
         except Exception as error:
+            print(
+                f"AI explanation error: "
+                f"{type(error).__name__}: {error}"
+            )
+
             st.error(
-                "We couldn't generate an explanation right now. "
-                "Please try again later."
+                "We couldn't generate an explanation right now."
             )
             st.caption(
-                f"Technical details: {type(error).__name__}"
+                f"Error type: {type(error).__name__}. "
+                "Check the VS Code terminal for details."
             )
 
     explanation = st.session_state.get("ai_explanation")
