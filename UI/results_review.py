@@ -129,6 +129,8 @@ def render_results_review(source="upload"):
                 interpreted_results
             )
 
+            
+            st.session_state.pop("ai_explanation", None)
             st.success("Reviewed results saved successfully.")
             st.subheader("Your results at a glance")
 
@@ -151,3 +153,5 @@ def render_results_review(source="upload"):
                 "This comparison uses the reference range you supplied. "
                 "It is not a diagnosis or a substitute for medical advice."
             )
+
+
