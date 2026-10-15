@@ -1,8 +1,9 @@
 
 import streamlit as st
 
-from ui.report_upload import render_report_upload
-from ui.manual_entry import render_manual_entry
+from UI.report_upload import render_report_upload
+from UI.manual_entry import render_manual_entry
+from UI.results_review import render_results_review
 
 
 def render_upload_section():
@@ -19,6 +20,7 @@ def render_upload_section():
 
     with upload_tab:
         render_report_upload()
+        render_results_review()
 
     with manual_tab:
         render_manual_entry()
