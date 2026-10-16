@@ -2,5 +2,4 @@ streamlit
 pypdf
 Pillow
 pytesseract
-pytest
 google-genai
