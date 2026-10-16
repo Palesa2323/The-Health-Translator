@@ -1,5 +1,4 @@
 import json
-
 from google import genai
 
 

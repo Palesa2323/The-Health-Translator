@@ -26,11 +26,11 @@ def render_upload_section():
 
         if st.session_state.get("parsed_results"):
             render_results_review(source="upload")
+            render_explanation_page()
 
     with manual_tab:
         render_manual_entry()
 
         if st.session_state.get("lab_results"):
             render_results_review(source="manual")
-            
-        render_explanation_page()
+            render_explanation_page()
