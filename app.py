@@ -1,3 +1,4 @@
+
 from pathlib import Path
 
 import streamlit as st
@@ -25,14 +26,12 @@ def main():
 
     load_styles()
 
-    # Keep the logo available in the sidebar.
     with st.sidebar:
         if LOGO_PATH.exists():
             st.image(str(LOGO_PATH), width=140)
 
         st.caption("Medical language, made human.")
 
-    # Restore the original single-page workflow.
     render_home_page()
 
     st.divider()
