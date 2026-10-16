@@ -1,6 +1,6 @@
 import json
 from google import genai
-
+from google.genai import errors
 
 MODEL_NAME = "gemini-3.8-flash"
 
@@ -95,15 +95,30 @@ SAFETY AND ACCURACY:
 Here are the verified laboratory results:
 {json.dumps(safe_results, indent=2)}
 """
+    try:
+        response = client.models.generate_content(
+            model=MODEL_NAME,
+            contents=prompt,
+        )
 
-    response = client.models.generate_content(
-        model=MODEL_NAME,
-        contents=prompt,
-    )
+        explanation = response.text
 
-    explanation = response.text
+        if not explanation:
+            raise RuntimeError(
+                "The AI returned an empty explanation."
+            )
 
-    if not explanation:
-        raise RuntimeError("The AI returned an empty explanation.")
+        return explanation
 
-    return explanation
+    except errors.ServerError as exc:
+        if exc.code == 503:
+            raise RuntimeError(
+                "The AI service is temporarily busy. "
+                "Your results have not been interpreted. "
+                "Please try again shortly."
+            ) from exc
+
+        raise RuntimeError(
+            "The AI service is temporarily unavailable. "
+            "Please try again shortly."
+        ) from exc
